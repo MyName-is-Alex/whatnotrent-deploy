@@ -28,6 +28,7 @@ public class ProductController : ControllerBase
         _userManager = userManager;
     }
     
+    [AllowAnonymous]
     [HttpGet("infinite/{pageNumber}/{categoryId}/{sortBy}/{sortDirection}")]
     public IActionResult GetAll(int pageNumber, int categoryId, SortByEnum sortBy, SortDirectionEnum sortDirection)
     {

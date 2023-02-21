@@ -35,8 +35,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddIdentityServer()
-    .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+/*builder.Services.AddIdentityServer()
+    .AddApiAuthorization<ApplicationUser, ApplicationDbContext>()
+    .AddDeveloperSigningCredential();*/
 
 builder.Services.AddAuthentication(auth =>
 {
@@ -80,9 +81,12 @@ builder.Services.AddSwaggerGen(c => {
                 Reference = new OpenApiReference {
                     Type = ReferenceType.SecurityScheme,
                         Id = "Bearer"
-                }
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header
             },
-            new string[] {}
+            new List<string>()
         }
     });
 });
@@ -92,8 +96,6 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
     app.UseMigrationsEndPoint();
 }
 else
@@ -101,14 +103,17 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
-app.UseIdentityServer();
+/*app.UseIdentityServer();*/
 app.UseAuthorization();
+app.UseDeveloperExceptionPage();
 
 app.MapControllerRoute(
     name: "default",
