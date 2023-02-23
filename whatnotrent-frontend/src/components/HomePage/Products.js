@@ -23,13 +23,8 @@ const Products = ({
     setProductList([]);
     setHasMore(true);
     setPage(0);
-  }, [searchStr]);
-
-  useEffect(() => {
-    setProductList([]);
-    setHasMore(true);
-    setPage(0);
-  }, [categoryFilter, sortByFilter, sortDirection]);
+    triggerScrollEvent();
+  }, [categoryFilter, sortByFilter, sortDirection, searchStr]);
 
   return productList.loading ? (
     <Loading />
@@ -103,6 +98,7 @@ const renderProductsComponent = (
         Anunturi
       </h1>
       <InfiniteScroll
+        dataLength={() => productList.length}
         next={() =>
           fetchPage(
             page,
@@ -118,7 +114,6 @@ const renderProductsComponent = (
         }
         hasMore={hasMore}
         loader={<Loading />}
-        dataLength={() => productList.length}
       >
         <Row className={"container row justify-content-center mx-auto mb-5"}>
           {productList.map((product) => (
@@ -140,5 +135,11 @@ const renderProductsComponent = (
     </>
   );
 };
+
+function triggerScrollEvent() {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("scroll"));
+  }
+}
 
 export default Products;

@@ -1,53 +1,42 @@
-﻿import Carousel from 'react-bootstrap/Carousel'
-import firstSlide from '../../images/first_slide_carousel.jpg'
-import adSpaceImgBlack from '../../images/ad_space_img_black.png'
-import thirdSlide from '../../images/Logo/png/logo-white-third-slide.png'
-import './MainSlider.css'
+﻿import Carousel from "react-bootstrap/Carousel";
+import firstSlide from "../../images/first_slide_carousel.jpg";
+import adSpaceImgBlack from "../../images/ad_space_img_black.png";
+import thirdSlide from "../../images/Logo/png/logo-white-third-slide.png";
 
 function MainSlider() {
-    return (
-        <Carousel 
-            className="w-75 mx-auto mt-5" style={{ backgroundColor: "black" }} 
-            onMouseEnter={() => {onMouseActionShadow("enter")}} 
-            onMouseLeave={() => {onMouseActionShadow("leave")}}
-        >
-            <Carousel.Item>
-                <img
-                    style={{height: "25vh"}}
-                    className="d-block m-auto"
-                    src={firstSlide}
-                    alt="First slide"
-                />
-                <div className={"image_shadow"}></div>
-            </Carousel.Item>
-            <Carousel.Item>
-                <img
-                    style={{height: "25vh"}}
-                    className="d-block m-auto pt-4"
-                    src={adSpaceImgBlack}
-                    alt="Second slide"
-                />
-                <div className={"image_shadow"}></div>
-            </Carousel.Item>
-            <Carousel.Item>
-                <img
-                    style={{height: "25vh"}}
-                    className="d-block m-auto pt-4"
-                    src={thirdSlide}
-                    alt="Third slide"
-                />
-                <div className={"image_shadow"}></div>
-            </Carousel.Item>
-        </Carousel>
-    );
-}
-
-const onMouseActionShadow = (action) => {
-    const boxShadow = document.querySelectorAll(".image_shadow");
-    boxShadow.forEach((x) => {
-        if (action === "enter") x.classList.add("image_shadow_hover")
-        else if (action === "leave") x.classList.remove("image_shadow_hover")
-    })
+  return (
+    <div className="pt-1 pb-3">
+      <Carousel
+        className="w-75 mx-auto mt-4"
+        style={{ backgroundColor: "black" }}
+      >
+        <Carousel.Item>
+          <img
+            style={{ height: "20vh" }}
+            className="d-block m-auto"
+            src={firstSlide}
+            alt="First slide"
+          />
+        </Carousel.Item>
+        <Carousel.Item>
+          <img
+            style={{ height: "20vh" }}
+            className="d-block m-auto"
+            src={adSpaceImgBlack}
+            alt="Second slide"
+          />
+        </Carousel.Item>
+        <Carousel.Item>
+          <img
+            style={{ height: "20vh" }}
+            className="d-block m-auto"
+            src={thirdSlide}
+            alt="Third slide"
+          />
+        </Carousel.Item>
+      </Carousel>
+    </div>
+  );
 }
 
 export default MainSlider;
