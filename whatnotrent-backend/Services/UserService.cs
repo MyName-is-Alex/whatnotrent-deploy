@@ -29,6 +29,27 @@ public class UserService : IUserService
     {
         if (userModel == null)
             throw new NullReferenceException();
+        if (_userManager.Users.Select(x => x.Email).Contains(userModel.Email))
+        {
+            return new UserManagerResponse
+            {
+                Message = "This email is already in use.",
+                IsSuccess = false,
+            };
+        }
+
+        /*if (userModel.Password.Length < 5
+            || userModel.Password == userModel.Password.ToLower()
+            || !userModel.Password.Any(char.IsDigit))
+        {
+            return new UserManagerResponse
+            {
+                Message =
+                    "Password must contain at least 5 characters.</br>Password must contain at least one digit and one uppercase letter.",
+                IsSuccess = false
+            };
+        }*/
+        
         if (userModel.Password != userModel.ConfirmPassword)
         {
             return new UserManagerResponse
@@ -72,12 +93,23 @@ public class UserService : IUserService
             };
         }
 
+        if (!result.Succeeded)
+        {
+            return new UserManagerResponse
+            {
+                Message = string.Join(" | ", result.Errors.Select(x => x.Description)),
+                IsSuccess = false
+            };
+        }
+        
         return new UserManagerResponse
         {
-            Message = "This email is already in use.",
+            Message =
+                "Something went wrong. Please try again!</br>If the problem persists contact us at support@email.com",
             IsSuccess = false,
             Errors = result.Errors.Select(x => x.Description)
         };
+
     }
 
     public async Task<UserManagerResponse> LoginUserAsync(LoginUserModel userModel)
