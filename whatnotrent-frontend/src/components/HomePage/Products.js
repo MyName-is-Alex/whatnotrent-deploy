@@ -62,7 +62,7 @@ const fetchPage = async (
   sortDirection,
   searchStr
 ) => {
-  const apiRoute = searchStr
+  const apiRoute = !searchStr
     ? ApiRoutes.PageProducts(page, categoryFilter, sortByFilter, sortDirection)
     : ApiRoutes.PageProductsSearched(
         page,
