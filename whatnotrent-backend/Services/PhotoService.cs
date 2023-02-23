@@ -1,90 +1,118 @@
-﻿using el_proyecte_grande.Models;
+﻿using Duende.IdentityServer.EntityFramework.Entities;
+using el_proyecte_grande.Daos.Implementation;
+using el_proyecte_grande.Models;
+using el_proyecte_grande.Utils;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using NuGet.Protocol;
 
 namespace el_proyecte_grande.Services;
 
 public class PhotoService
 {
-    public ProductPhoto GetPhotosForProduct(int productId)
+    private const string IMGBB_API_KEY = "399ce08415a12e357e1540b0f276f320";
+    private PhotoDaoDatabase _photoDao;
+    
+    public PhotoService(PhotoDaoDatabase photoDao)
     {
-        var photos = new ProductPhoto
-        {
-            ProductId = productId,
-            URLs = new List<string>()
-        };
-        
-        var fileStream = new DirectoryInfo($"./ClientApp/public/ProductsImages/{productId}");
-        
-        foreach (var fileInfo in fileStream.GetFiles())
-        {
-            photos.URLs.Add(fileInfo.Name);
-        }
-
-        return photos;
+        _photoDao = photoDao;
     }
-
-    public void UploadPhotosForProduct(List<IFormFile> images, int productId)
+    
+    public async Task<TaskResponse> UploadPhotosForProduct(List<IFormFile> images, int productId)
     {
-        string directoryPath = $".\\ClientApp\\public\\ProductsImages\\{productId}";
-        Directory.CreateDirectory(directoryPath);
+        int index = 0;
         foreach (var image in images)
         {
-            var filePath = Path.Combine($".\\ClientApp\\public\\ProductsImages\\{productId}", image.FileName);
-            using (Stream stream = new FileStream(filePath, FileMode.Create))
+            index++;
+            var bytes = await image.GetBytes();
+            var hexString = Convert.ToBase64String(bytes);
+
+            var urlParameters = new Dictionary<string, string>
             {
-                image.CopyTo(stream);
+                { "image", hexString }
+            };
+            var content = new FormUrlEncodedContent(urlParameters);
+            
+            using (HttpClient client = new HttpClient())
+            {
+                var response = await client.PostAsync($"https://api.imgbb.com/1/upload?key={IMGBB_API_KEY}", content);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return new TaskResponse
+                    {
+                        Message = "Bad Request",
+                        IsSuccess = false
+                    };
+                }
+                
+                var jsonString = await response.Content.ReadAsStringAsync();
+                var jsonResponse = JObject.Parse(jsonString);
+                string photoUrl = jsonResponse.SelectToken("$.data['display_url']").Value<string>();
+                if (photoUrl == null)
+                {
+                    return new TaskResponse
+                    {
+                        Message = "The api route is good but something went wrong.",
+                        IsSuccess = false
+                    };
+                } 
+                
+                ProductPhoto productPhoto = new ProductPhoto
+                {
+                    ProductId = productId,
+                    PhotoUrl = photoUrl
+                };
+                _photoDao.Add(productPhoto);
             }
         }
-    }
-
-    public CategoryPhoto GetPhotosForCategory(int categoryId)
-    {
-        var photos = new CategoryPhoto
+        return new TaskResponse
         {
-            CategoryId = categoryId,
-            URLs = new List<string>()
+            Message = "The images are on the cloud",
+            IsSuccess = true
         };
-        
-        var fileStream = new DirectoryInfo($"./ClientApp/public/CategoriesImages/{categoryId}");
-        
-        foreach (var fileInfo in fileStream.GetFiles())
-        {
-            photos.URLs.Add(fileInfo.Name);
-        }
-
-        return photos;
     }
 
-    public void UploadPhotoForUser(IFormFile image, string userId)
+    public async Task<TaskResponse> UploadPhotoForUser(IFormFile image, string userId)
     {
-        string directoryPath = $".\\ClientApp\\public\\UsersImages\\{userId}";
+        var bytes = await image.GetBytes();
+        var hexString = Convert.ToBase64String(bytes);
 
-        if (!Directory.Exists(directoryPath))
-            Directory.CreateDirectory(directoryPath);
-        else
+        var urlParameters = new Dictionary<string, string>
         {
-            string[] files = Directory.GetFiles(directoryPath);
-            foreach (var file in files)
+            { "image", hexString }
+        };
+        var content = new FormUrlEncodedContent(urlParameters);
+            
+        using (HttpClient client = new HttpClient())
+        {
+            var response = await client.PostAsync($"https://api.imgbb.com/1/upload?key={IMGBB_API_KEY}", content);
+            if (!response.IsSuccessStatusCode)
             {
-                File.Delete(file);
+                return new TaskResponse
+                {
+                    Message = "Bad Request",
+                    IsSuccess = false
+                };
             }
-        }
+                
+            var jsonString = await response.Content.ReadAsStringAsync();
+            var jsonResponse = JObject.Parse(jsonString);
+            string photoUrl = jsonResponse.SelectToken("$.data['display_url']").Value<string>();
+            if (photoUrl == null)
+            {
+                return new TaskResponse
+                {
+                    Message = "The api route is good but something went wrong.",
+                    IsSuccess = false
+                };
+            }
 
-        var filePath = Path.Combine($".\\ClientApp\\public\\UsersImages\\{userId}", image.FileName);
-        using (Stream stream = new FileStream(filePath, FileMode.Create))
-        {
-            image.CopyTo(stream);
+            return new TaskResponse
+            {
+                Message = photoUrl,
+                IsSuccess = true
+            };
         }
     }
-
-    public string GetPhotoForUser(string userId)
-    {
-        if (Directory.Exists($".\\ClientApp\\public\\UsersImages\\{userId}"))
-        {
-            var fileStream = new DirectoryInfo($".\\ClientApp\\public\\UsersImages\\{userId}");
-            return fileStream.GetFiles()[0].Name;
-        }
-
-        return "";
-    } 
 }

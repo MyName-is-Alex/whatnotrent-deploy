@@ -1,7 +1,10 @@
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const { env } = require("process");
 
-const target = "http://localhost:54226";
+const target =
+  process.env.NODE_ENV === "development"
+    ? "https://localhost:7043/api"
+    : "https://webapp-230221130957.azurewebsites.net/api";
 
 const context = [
   "/weatherforecast",

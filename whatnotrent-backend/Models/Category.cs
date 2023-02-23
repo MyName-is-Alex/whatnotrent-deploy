@@ -11,6 +11,6 @@ public class Category
     public string Description { get; set; }
     [JsonIgnore]
     public List<Product> Products { get; set; }
-    [NotMapped]
-    public CategoryPhoto? Photos { get; set; }
+    
+    public string PhotoUrl { get; set; }
 }

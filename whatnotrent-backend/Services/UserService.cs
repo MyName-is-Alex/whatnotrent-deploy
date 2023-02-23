@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using el_proyecte_grande.Daos;
+using el_proyecte_grande.Daos.Implementation;
 using el_proyecte_grande.Models;
 using el_proyecte_grande.Utils;
 using Microsoft.AspNetCore.Identity;
@@ -16,11 +17,11 @@ public class UserService : IUserService
     private PhotoService _photoService;
     private IProductDao _productDao;
 
-    public UserService(UserManager<ApplicationUser> userManager, IConfiguration configuration, IProductDao productDao)
+    public UserService(UserManager<ApplicationUser> userManager, IConfiguration configuration, IProductDao productDao, PhotoDaoDatabase photoDao)
     {
         _userManager = userManager;
         _configuration = configuration;
-        _photoService = new PhotoService();
+        _photoService = new PhotoService(photoDao);
         _productDao = productDao;
     }
     
@@ -42,6 +43,14 @@ public class UserService : IUserService
             return new UserManagerResponse
             {
                 Message = "This phone number is already in use.",
+                IsSuccess = false
+            };
+        }
+        if (_userManager.Users.Select(x => x.UserName).Contains(userModel.UserName))
+        {
+            return new UserManagerResponse
+            {
+                Message = "This username is already taken.",
                 IsSuccess = false
             };
         }
@@ -123,7 +132,16 @@ public class UserService : IUserService
         
         if (newUserInfo.Image != null)
         {
-            _photoService.UploadPhotoForUser(newUserInfo.Image, appUser.Id);
+            var response = await _photoService.UploadPhotoForUser(newUserInfo.Image, appUser.Id);
+            if (!response.IsSuccess)
+            {
+                return new UserManagerResponse
+                {
+                    Message = response.Message,
+                    IsSuccess = false
+                };
+            }
+            appUser.PhotoUrl = response.Message;
         }
         if (newUserInfo.Email != null)
             appUser.Email = newUserInfo.Email;
@@ -153,16 +171,16 @@ public class UserService : IUserService
 
     public async Task<UserModel> GetUserInfoAsync(ClaimsPrincipal user)
     {
+        const string defaultImg = "https://i.ibb.co/86pmmt0/default-Profile-Img.png";
         var appUser = await UserInfoRetriever.GetAppUser(user, _userManager);
         var products = _productDao.GetBy(appUser);
-        products.AddPhotos(_photoService);
         var result = new UserModel
         {
             Email = appUser.Email,
             UserName = appUser.UserName,
             UserId = appUser.Id,
             PhoneNumber = appUser.PhoneNumber,
-            PhotoUrl = _photoService.GetPhotoForUser(appUser.Id),
+            PhotoUrl = appUser.PhotoUrl,
             Products = products
         };
 

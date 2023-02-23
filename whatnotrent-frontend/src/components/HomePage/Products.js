@@ -5,6 +5,7 @@ import authHeader from "../api-authorization/authHeader";
 import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Row } from "reactstrap";
+import { ApiRoutes } from "../../ApiRoutes";
 
 const Products = ({
   categoryFilter,
@@ -19,7 +20,6 @@ const Products = ({
   const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
-    console.log(process.env.NODE_ENV);
     setProductList([]);
     setHasMore(true);
     setPage(0);
@@ -63,8 +63,14 @@ const fetchPage = async (
   searchStr
 ) => {
   const apiRoute = searchStr
-    ? `api/product/infinite/${page}/${categoryFilter}/${sortByFilter}/${sortDirection}/${searchStr}`
-    : `api/product/infinite/${page}/${categoryFilter}/${sortByFilter}/${sortDirection}`;
+    ? ApiRoutes.PageProducts(page, categoryFilter, sortByFilter, sortDirection)
+    : ApiRoutes.PageProductsSearched(
+        page,
+        categoryFilter,
+        sortByFilter,
+        sortDirection,
+        searchStr
+      );
 
   const response = await axios.get(apiRoute, authHeader());
   const result = await response["data"];
@@ -124,7 +130,7 @@ const renderProductsComponent = (
               endDate={product["endDate"]}
               price={product["price"]}
               unit={product["unit"]}
-              photo={product["photos"]["urLs"][0]}
+              photo={product.photos[0].photoUrl}
               timeUnit={formTimeUnits[product["unit"]]}
               category={formCategories[product["category"]["id"] - 1]}
             />

@@ -20,6 +20,5 @@ public class Product
     public string Location { get; set; }
     public Category Category { get; set; }
     public ApplicationUser User { get; set; }
-    [NotMapped]
-    public ProductPhoto? Photos { get; set; }
+    public List<ProductPhoto> Photos { get; set; }
 }

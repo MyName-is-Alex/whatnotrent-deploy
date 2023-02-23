@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using el_proyecte_grande.Data;
 
@@ -11,9 +12,10 @@ using el_proyecte_grande.Data;
 namespace What_Not_Rent.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230222101420_UpdateCategoryTable")]
+    partial class UpdateCategoryTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -205,9 +207,6 @@ namespace What_Not_Rent.Data.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("PhotoUrl")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -303,27 +302,6 @@ namespace What_Not_Rent.Data.Migrations
                     b.ToTable("Product");
                 });
 
-            modelBuilder.Entity("el_proyecte_grande.Models.ProductPhoto", b =>
-                {
-                    b.Property<int>("PhotoId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PhotoId"), 1L, 1);
-
-                    b.Property<string>("PhotoUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.HasKey("PhotoId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ProductPhotos");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -349,6 +327,50 @@ namespace What_Not_Rent.Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "b0f4e58f-f9e5-45fe-9398-65adc43214a4",
+                            ConcurrencyStamp = "3e24a0f8-9a3e-49a4-9677-00b318f24d6b",
+                            Name = "Poweruser",
+                            NormalizedName = "POWERUSER"
+                        },
+                        new
+                        {
+                            Id = "608f0d27-27bd-4f84-94da-7c5c0e73ef9e",
+                            ConcurrencyStamp = "9498766f-ec79-4df0-81fd-9757d3170768",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "289f7f98-4984-45f6-aee4-dc184bceede8",
+                            ConcurrencyStamp = "f7a0ba03-9d9d-4af5-8e41-7b838fac084c",
+                            Name = "Employee",
+                            NormalizedName = "EMPLOYEE"
+                        },
+                        new
+                        {
+                            Id = "0f99b454-54ba-4915-ad1a-9f8190d81a4a",
+                            ConcurrencyStamp = "2b06998e-5eed-4941-bcb4-6b07e9addf27",
+                            Name = "Prospect",
+                            NormalizedName = "PROSPECT"
+                        },
+                        new
+                        {
+                            Id = "a37283f7-4a19-4001-b550-52d524508529",
+                            ConcurrencyStamp = "ef65c615-8082-4ab9-849b-faeb22162b99",
+                            Name = "Pending",
+                            NormalizedName = "PENDING"
+                        },
+                        new
+                        {
+                            Id = "3f4b3789-ec18-47ca-a85c-e7698e22da92",
+                            ConcurrencyStamp = "f74bdf04-ed1d-4f3a-bcbd-d064c62bb62f",
+                            Name = "Investor",
+                            NormalizedName = "INVESTOR"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -474,15 +496,6 @@ namespace What_Not_Rent.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("el_proyecte_grande.Models.ProductPhoto", b =>
-                {
-                    b.HasOne("el_proyecte_grande.Models.Product", null)
-                        .WithMany("Photos")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -537,11 +550,6 @@ namespace What_Not_Rent.Data.Migrations
             modelBuilder.Entity("el_proyecte_grande.Models.Category", b =>
                 {
                     b.Navigation("Products");
-                });
-
-            modelBuilder.Entity("el_proyecte_grande.Models.Product", b =>
-                {
-                    b.Navigation("Photos");
                 });
 #pragma warning restore 612, 618
         }

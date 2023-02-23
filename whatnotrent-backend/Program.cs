@@ -14,6 +14,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var myAllowSpecificOrigins = "MyAllowSpecificOrigins";
+
+builder.Services.AddCors(cors => {
+    cors.AddPolicy(name: myAllowSpecificOrigins, policy =>
+    {
+        policy.WithOrigins("http://localhost:3000", "https://webapp-230221130957.azurewebsites.net/").AllowCredentials().AllowAnyHeader().AllowAnyMethod();
+    });
+});
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
@@ -21,6 +29,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IProductDao, ProductDaoDatabase>();
 builder.Services.AddScoped<IDao<Category>, CategoryDaoDatabase>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<PhotoDaoDatabase>();
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -34,10 +43,6 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
-
-/*builder.Services.AddIdentityServer()
-    .AddApiAuthorization<ApplicationUser, ApplicationDbContext>()
-    .AddDeveloperSigningCredential();*/
 
 builder.Services.AddAuthentication(auth =>
 {
@@ -109,6 +114,8 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
+app.UseCors(myAllowSpecificOrigins);
 
 app.UseAuthentication();
 /*app.UseIdentityServer();*/

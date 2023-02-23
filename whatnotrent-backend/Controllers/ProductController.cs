@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Duende.IdentityServer.Extensions;
 using el_proyecte_grande.Daos;
+using el_proyecte_grande.Daos.Implementation;
 using el_proyecte_grande.Models;
 using el_proyecte_grande.Services;
 using el_proyecte_grande.Utils;
@@ -20,11 +21,11 @@ public class ProductController : ControllerBase
     private PhotoService _photoService;
     private UserManager<ApplicationUser> _userManager;
 
-    public ProductController(IProductDao productDao, IDao<Category> categoryDao, UserManager<ApplicationUser> userManager)
+    public ProductController(IProductDao productDao, IDao<Category> categoryDao, UserManager<ApplicationUser> userManager, PhotoDaoDatabase photoDao)
     {
         _categoryService = new CategoryService(categoryDao);
         _productService = new ProductService(productDao);
-        _photoService = new PhotoService();
+        _photoService = new PhotoService(photoDao);
         _userManager = userManager;
     }
     
@@ -50,7 +51,6 @@ public class ProductController : ControllerBase
     public IActionResult Get(int productId)
     {
         var product = _productService.GetProductById(productId);
-        product.Photos = _photoService.GetPhotosForProduct(productId);
         return Ok(product);
     }
     
@@ -75,8 +75,8 @@ public class ProductController : ControllerBase
 
         var category = _categoryService.GetCategoryById(file.CategoryId);
         var productId = _productService.AddProduct(file, category, user);
-        _photoService.UploadPhotosForProduct(file.Images, productId);
+        var response = await _photoService.UploadPhotosForProduct(file.Images, productId);
         
-        return StatusCode(StatusCodes.Status201Created);
+        return Ok(response);
     }
 }

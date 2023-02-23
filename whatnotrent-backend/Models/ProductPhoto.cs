@@ -1,7 +1,11 @@
-﻿namespace el_proyecte_grande.Models;
+﻿using System.ComponentModel.DataAnnotations;
 
-public class ProductPhoto : IPhoto
+namespace el_proyecte_grande.Models;
+
+public class ProductPhoto
 {
+    [Key]
+    public int PhotoId { get; set; }
     public int ProductId { get; set; }
-    public List<string> URLs { get; set; }
+    public string? PhotoUrl { get; set; }
 }
