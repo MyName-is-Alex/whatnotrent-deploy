@@ -19,7 +19,7 @@ var myAllowSpecificOrigins = "MyAllowSpecificOrigins";
 builder.Services.AddCors(cors => {
     cors.AddPolicy(name: myAllowSpecificOrigins, policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "https://webapp-230221130957.azurewebsites.net/").AllowCredentials().AllowAnyHeader().AllowAnyMethod();
+        policy.WithOrigins("http://localhost:3000", "https://whatnotrent-deployment.vercel.app").AllowCredentials().AllowAnyHeader().AllowAnyMethod();
     });
 });
 
@@ -115,7 +115,10 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-app.UseCors(myAllowSpecificOrigins);
+app.UseCors(opt =>
+{
+    opt.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000", "https://whatnotrent-deployment.vercel.app");
+});
 
 app.UseAuthentication();
 /*app.UseIdentityServer();*/
