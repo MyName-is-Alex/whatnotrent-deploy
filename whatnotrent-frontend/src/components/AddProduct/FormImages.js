@@ -1,9 +1,8 @@
-﻿import {useEffect, useRef} from "react";
-import {Form, Image} from "react-bootstrap";
-import {Col, Row} from "reactstrap";
+﻿import { useEffect, useRef } from "react";
+import { Form, Image } from "react-bootstrap";
+import { Col, Row } from "reactstrap";
 
-
-const FormImages = ({files, setFiles}) => {
+const FormImages = ({ files, setFiles }) => {
     //IMAGES START
     const IMAGES = ["Image 1", "Image 2", "Image 3", "Image 4", "Image 5", "image 6"];
 
@@ -15,12 +14,12 @@ const FormImages = ({files, setFiles}) => {
 
     function onInputChange(event) {
         event.target.previousElementSibling.firstChild.nextSibling.src = URL.createObjectURL(event.target.files[0]);
-        event.target.previousElementSibling.firstChild.style.display = "none"
+        event.target.previousElementSibling.firstChild.style.display = "none";
 
-        const fileReader = new FileReader()
+        const fileReader = new FileReader();
         fileReader.onload = () => {
-            URL.revokeObjectURL(imageContainer.current)
-        }
+            URL.revokeObjectURL(imageContainer.current);
+        };
     }
     //IMAGES END
 
@@ -29,58 +28,60 @@ const FormImages = ({files, setFiles}) => {
         const index = e.target.parentElement.dataset.index;
         setFiles({
             ...files,
-            [index]: e.target.files[0]
+            [index]: e.target.files[0],
         });
     };
     //FILE UPLOAD END
-    
-    return  (<Row>{IMAGES.map((item, index) => (
-            <Col xl={4} lg={6} md={6} key={index} className={"mb-3"}> 
-                <Form.Group data-index={index}>
-                    <div
-                        className={"position-relative"}    
-                        style={{
-                            width: "100%",
-                            aspectRatio: "1/0.8", 
-                            boxShadow: "5px 3px 15px rgba(0, 0, 0, 0.3)", 
-                            marginBottom: "5px",
-                            borderRadius: "5px",
-                            overflow: "hidden"
-                        }}
-                    >
+
+    return (
+        <Row>
+            {IMAGES.map((item, index) => (
+                <Col xl={4} lg={6} md={6} key={index} className={"mb-3"}>
+                    <Form.Group data-index={index}>
                         <div
-                            className={"position-absolute top-50 start-50 translate-middle"}
-                        >
-                            Add image
+                            className={"position-relative"}
+                            style={{
+                                width: "100%",
+                                aspectRatio: "1/0.8",
+                                boxShadow: "5px 3px 15px rgba(0, 0, 0, 0.3)",
+                                marginBottom: "5px",
+                                borderRadius: "5px",
+                                overflow: "hidden",
+                            }}>
+                            <div className={"position-absolute top-50 start-50 translate-middle"}>Add image</div>
+                            <img
+                                src={"#"}
+                                alt={""}
+                                ref={(el) => (imageContainer.current[index] = el)}
+                                style={{
+                                    width: "100%",
+                                    position: "relative",
+                                    top: "50%",
+                                    right: "50%",
+                                    transform: "translate(50%, -50%)",
+                                    overflow: "hidden",
+                                }}
+                            />
                         </div>
-                        <img
-                            src={"#"}
-                            alt={""}
-                            ref={el => imageContainer.current[index] = el}
-                            style={{width: "100%", position: "relative", top: "50%", right: "50%", 
-                                transform: "translate(50%, -50%)", overflow: "hidden"}}
+                        <Form.Control
+                            required={index === 0}
+                            type={"file"}
+                            onChange={(e) => {
+                                onInputChange(e);
+                                saveFile(e);
+                            }}
+                            accept="image/*"
+                            aria-required={true}
+                            style={{ fontSize: "14px" }}
                         />
-                    </div>
-                    <Form.Control
-                        required={index === 0}
-                        type={"file"}
-                        onChange={(e) => {
-                            onInputChange(e);
-                            saveFile(e);
-                        }}
-                        accept="image/*"
-                        aria-required={true}
-                    >
-                    </Form.Control>
-            
-                    <Form.Control.Feedback type={"invalid"}>
-                        At least one image, no di*k pics!!!
-                    </Form.Control.Feedback>
-                </Form.Group>
-            </Col>
-        ))
-        }</Row>
-    )
-}
+                        <Form.Control.Feedback type={"invalid"}>
+                            You need to add at least one image!
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                </Col>
+            ))}
+        </Row>
+    );
+};
 
 export default FormImages;

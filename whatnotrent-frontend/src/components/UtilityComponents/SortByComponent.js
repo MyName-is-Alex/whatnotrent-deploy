@@ -22,7 +22,7 @@ const SortByComponent = ({
         );
     }
     return (
-        <Row className={"pt-3 mt-3 justify-content-center"}>
+        <Row className={"pt-3 mt-3 justify-content-center w-75 mx-auto"}>
             {Object.keys(sortByEnum).map((key) => (
                 <Col key={key}>
                     <SortByButton

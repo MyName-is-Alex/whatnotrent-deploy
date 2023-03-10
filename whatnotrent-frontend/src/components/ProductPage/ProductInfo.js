@@ -1,11 +1,9 @@
-﻿
-
-const ProductInfo = ({ product, className }) => {
+﻿const ProductInfo = ({ product, className }) => {
     return (
         <div className={className}>
             <h2 className={"bg-white p-3 m-0"}>{product["name"]}</h2>
             <div className={"container bg-white p-3 mt-3"}>
-                <p className={"mt-5"}>Disponibility</p>
+                <p className={"mt-5"}>Availability</p>
                 <div className={"row justify-content-center"}>
                     <p className={"col-4"}>From</p>
                     <p className={"col-1"}>-</p>
@@ -22,7 +20,7 @@ const ProductInfo = ({ product, className }) => {
                 <p>{product["description"]}</p>
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default ProductInfo;
